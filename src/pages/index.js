@@ -1,4 +1,4 @@
-import { useState, useEffect, use } from "react";
+import { useState, useEffect } from "react";
 import { Box, Button, Flex, FormControl, FormLabel, Input, Table, Tbody, Td, Th, Thead, Tr, VStack, useToast } from "@chakra-ui/react";
 
 import Header from '@/components/Header';
@@ -60,7 +60,7 @@ export default function Home() {
         isClosable: true,
       });
     }
-  }
+  };
 
   const handleSubmitCreateProduct = async (e) => {
     e.preventDefault();
@@ -102,6 +102,15 @@ export default function Home() {
     } catch (error) {
       console.log(error);
     }
+  };
+
+  const handleShowUpdateClient = (product) => {
+    setId(product._id);
+    setName(product.name);
+    setValue(product.value);
+    setDescription(product.description);
+    setStockQuantity(product.stockQuantity);
+    setIsFormOpen(true);
   };
 
   const handleUpdateProduct = async (e) => {
@@ -240,7 +249,7 @@ export default function Home() {
                           fontSize="small"
                           colorScheme="yellow"
                           mr="2"
-                          onClick={() => handleUpdateProduct(product)}
+                          onClick={() => handleShowUpdateClient(product)}
                         >
                           Editar
                         </Button>
