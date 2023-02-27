@@ -1,5 +1,5 @@
 import { Inter } from 'next/font/google';
-import { Box, Button, Flex, FormControl, FormLabel, Input, VStack } from "@chakra-ui/react";
+import { Box, Button, Flex, FormControl, FormLabel, Input, Table, Tbody, Td, Th, Thead, Tr, VStack } from "@chakra-ui/react";
 
 import Header from '@/components/Header';
 
@@ -45,6 +45,32 @@ export default function Home() {
               Adicionar
             </Button>
           </VStack>
+
+          <Table variant="striped" mt={100}>
+            <Thead bg="teal.500" backgroundColor="blue.900">
+              <Tr>
+                <Th textColor="white">Nome</Th>
+                <Th textColor="white">Valor</Th>
+                <Th textColor="white">Descrição</Th>
+                <Th textColor="white">Estoque</Th>
+                <Th textColor="white">Ações</Th>
+              </Tr>
+            </Thead>
+            <Tbody>
+              <Tr>
+                <Td>Tela</Td>
+                <Td>400,00</Td>
+                <Td>Monitor Lg</Td>
+                <Td>200</Td>
+                <Td justifyContent="space-between">
+                  <Flex>
+                    <Button size="sm" fontSize="small" colorScheme="yellow" mr="2">Editar</Button>
+                    <Button size="sm" fontSize="small" colorScheme="red" mr="2">Excluir</Button>
+                  </Flex>
+                </Td>
+              </Tr>
+            </Tbody>
+          </Table>
         </Box>
       </Flex>
     </Box>
