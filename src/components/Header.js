@@ -11,6 +11,7 @@ const Header = () => {
             padding={6}
             bg="teal.500"
             color="white"
+            backgroundColor="blue.900"
         >
             <Flex align="center" mr={5}>
                 <Heading as="h1" size="lg" letterSpacing={"tighter"}>
