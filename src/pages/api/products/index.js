@@ -11,11 +11,11 @@ export default async function handler(req, res) {
         case "GET":
             try {
                 const products = await Product.find({});
-                res.status(200).json({ success, data: products });
+                res.status(200).json({ success: true, data: products });
             } catch (error) {
+                console.log(error);
                 res.status(500).json({ success: false, error });
             }
-
             break;
 
         case "POST":

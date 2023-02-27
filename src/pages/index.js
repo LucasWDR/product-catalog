@@ -70,7 +70,7 @@ export default function Home() {
     try {
       setIsLoading(true);
       const { data } = await api.post("/products", { name, value, description, stockQuantity });
-      setProducts(clients.concat(data.data));
+      setProducts(products.concat(data.data));
       setName("");
       setValue("");
       setDescription("");
@@ -135,7 +135,7 @@ export default function Home() {
   useEffect(() => {
     [
       api.get("/products").then(({ data }) => {
-        setClients(data.data);
+        setProducts(data.data);
       }),
     ];
   }, [products]);
@@ -164,7 +164,7 @@ export default function Home() {
           {isFormOpen ? (
           <VStack 
           as="form" 
-          onSubmit={id ? handleSubmitCreateProduct : handleSubmitCreateProduct}
+          onSubmit={id ? handleUpdateProduct : handleSubmitCreateProduct}
           >
             <FormControl>
               <FormLabel>Nome do Produto</FormLabel>
@@ -205,11 +205,17 @@ export default function Home() {
                 onChange={(e) => setStockQuantity(e.target.value)}
               />
             </FormControl>
-            <Button colorScheme="green" type="submit" mt={6} isLoading={isLoading}>
-              Adicionar
+
+            <Button 
+            colorScheme="green" 
+            type="submit" 
+            mt={6} 
+            isLoading={isLoading}>
+              {id ? "Atualizar" : "Cadastrar"}
             </Button>
           </VStack>
           ): null}
+
           <Table variant="striped" mt={100}>
             <Thead bg="teal.500" backgroundColor="blue.900">
               <Tr>
@@ -221,8 +227,7 @@ export default function Home() {
               </Tr>
             </Thead>
             <Tbody>
-              {
-                products.map((product, index) => (
+              {products.map((product, index) => (
                   <Tr key={index}>
                     <Td>{product.name}</Td>
                     <Td>{product.value}</Td>
@@ -235,6 +240,7 @@ export default function Home() {
                           fontSize="small"
                           colorScheme="yellow"
                           mr="2"
+                          onClick={() => handleUpdateProduct(product)}
                         >
                           Editar
                         </Button>
@@ -243,6 +249,7 @@ export default function Home() {
                           fontSize="small"
                           colorScheme="red"
                           mr="2"
+                          onClick={() => handleDeleteProduct(product._id)}
                         >
                           Excluir
                         </Button>
@@ -255,5 +262,5 @@ export default function Home() {
         </Box>
       </Flex>
     </Box>
-  )
+  );
 }
