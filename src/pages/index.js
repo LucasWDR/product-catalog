@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { Box, Button, Flex, FormControl, FormLabel, Input, Table, Tbody, Td, Th, Thead, Tr, VStack, useToast } from "@chakra-ui/react";
 
 import Header from '@/components/Header';
@@ -19,7 +19,7 @@ export default function Home() {
 
 
   const isValidFormData = () => {
-    if(!name) {
+    if (!name) {
       return toast({
         title: "Preencha o campo nome!",
         status: "error",
@@ -27,7 +27,7 @@ export default function Home() {
         isClosable: true,
       });
     }
-    if(!value) {
+    if (!value) {
       return toast({
         title: "Preencha o campo Valor!",
         status: "error",
@@ -35,7 +35,7 @@ export default function Home() {
         isClosable: true,
       });
     }
-    if(!description) {
+    if (!description) {
       return toast({
         title: "Preencha o campo de descrição!",
         status: "error",
@@ -43,7 +43,7 @@ export default function Home() {
         isClosable: true,
       });
     }
-    if(!stockQuantity) {
+    if (!stockQuantity) {
       return toast({
         title: "Preencha o campo estoque!",
         status: "error",
@@ -52,7 +52,7 @@ export default function Home() {
       });
     }
 
-    if(products.some((product) => product.name === name && product._id  !== id)){
+    if (products.some((product) => product.name === name && product._id !== id)) {
       return toast({
         title: "Produto ja cadastrado!!",
         status: "error",
@@ -62,6 +62,83 @@ export default function Home() {
     }
   }
 
+  const handleSubmitCreateProduct = async (e) => {
+    e.preventDefault();
+
+    if (isValidFormData()) return;
+
+    try {
+      setIsLoading(true);
+      const { data } = await api.post("/products", { name, value, description, stockQuantity });
+      setProducts(clients.concat(data.data));
+      setName("");
+      setValue("");
+      setDescription("");
+      setStockQuantity("");
+      setIsFormOpen(!isFormOpen);
+
+      toast({
+        title: "Produto cadastrado com sucesso!",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteProduct = async (_id) => {
+    try {
+      await api.delete(`/products/${_id}`);
+      toast({
+        title: "Produto deletado com sucesso!!",
+        status: "info",
+        duration: 9000,
+        isClosable: true,
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleUpdateProduct = async (e) => {
+    e.preventDefault();
+
+    if (isValidFormData()) return;
+
+    try {
+      setIsLoading(true);
+      await api.put(`products/${id}`, { name, value, description, stockQuantity });
+      setName("");
+      setValue("");
+      setDescription("");
+      setStockQuantity("");
+      setId(null);
+      setIsFormOpen(!isFormOpen);
+
+      toast({
+        title: "Atualizado com sucesso!",
+        status: "success",
+        duration: 9000,
+        isClosable: true,
+      });
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    [
+      api.get("/products").then(({ data }) => {
+        setClients(data.data);
+      }),
+    ];
+  }, [products]);
 
   return (
     <Box>
@@ -76,54 +153,63 @@ export default function Home() {
           mt="25"
         >
           <Flex justifyContent="flex-end" alignItems="center">
-            <Button colorScheme="green" border>+</Button>
+            <Button 
+            colorScheme="green"
+            onClick={() => setIsFormOpen(!isFormOpen)}
+            >
+            {isFormOpen ? "-" : "+"}
+            </Button>
           </Flex>
 
-          <VStack as="form">
+          {isFormOpen ? (
+          <VStack 
+          as="form" 
+          onSubmit={id ? handleSubmitCreateProduct : handleSubmitCreateProduct}
+          >
             <FormControl>
               <FormLabel>Nome do Produto</FormLabel>
-              <Input 
-              type="text" 
-              placeholder="Digite o nome do produto" 
-              value = {name}
-              onChange = {(e) => setName(e.target.value)}
+              <Input
+                type="text"
+                placeholder="Digite o nome do produto"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
               />
             </FormControl>
 
             <FormControl>
               <FormLabel>Valor</FormLabel>
-              <Input 
-              type="number" 
-              placeholder="Digite o valor do produto" 
-              value = {value}
-              onChange = {(e) => setValue(e.target.value)}
+              <Input
+                type="number"
+                placeholder="Digite o valor do produto"
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
               />
             </FormControl>
 
             <FormControl>
               <FormLabel>Descrição</FormLabel>
-              <Input type="text" 
-              placeholder="Digite a descrição do produto" 
-              wrap="hard" 
-              value = {description}
-              onChange = {(e) => setDescription(e.target.value)}
+              <Input type="text"
+                placeholder="Digite a descrição do produto"
+                wrap="hard"
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
               />
             </FormControl>
 
             <FormControl>
               <FormLabel>Estoque</FormLabel>
-              <Input 
-              type="number" 
-              placeholder="Digite o estoque do produto" 
-              value = {stockQuantity}
-              onChange = {(e) => setStockQuantity(e.target.value)}
+              <Input
+                type="number"
+                placeholder="Digite o estoque do produto"
+                value={stockQuantity}
+                onChange={(e) => setStockQuantity(e.target.value)}
               />
             </FormControl>
-            <Button colorScheme="green" type="submit" mt={6}>
+            <Button colorScheme="green" type="submit" mt={6} isLoading={isLoading}>
               Adicionar
             </Button>
           </VStack>
-
+          ): null}
           <Table variant="striped" mt={100}>
             <Thead bg="teal.500" backgroundColor="blue.900">
               <Tr>
@@ -135,18 +221,35 @@ export default function Home() {
               </Tr>
             </Thead>
             <Tbody>
-              <Tr>
-                <Td>Tela</Td>
-                <Td>400,00</Td>
-                <Td>Monitor Lg</Td>
-                <Td>200</Td>
-                <Td justifyContent="space-between">
-                  <Flex>
-                    <Button size="sm" fontSize="small" colorScheme="yellow" mr="2">Editar</Button>
-                    <Button size="sm" fontSize="small" colorScheme="red" mr="2">Excluir</Button>
-                  </Flex>
-                </Td>
-              </Tr>
+              {
+                products.map((product, index) => (
+                  <Tr key={index}>
+                    <Td>{product.name}</Td>
+                    <Td>{product.value}</Td>
+                    <Td>{product.description}</Td>
+                    <Td>{product.stockQuantity}</Td>  
+                    <Td justifyContent="space-between">
+                      <Flex>
+                        <Button
+                          size="sm"
+                          fontSize="small"
+                          colorScheme="yellow"
+                          mr="2"
+                        >
+                          Editar
+                        </Button>
+                        <Button
+                          size="sm"
+                          fontSize="small"
+                          colorScheme="red"
+                          mr="2"
+                        >
+                          Excluir
+                        </Button>
+                      </Flex>
+                    </Td>
+                  </Tr>
+                ))}
             </Tbody>
           </Table>
         </Box>
