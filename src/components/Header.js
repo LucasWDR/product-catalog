@@ -15,7 +15,7 @@ const Header = () => {
         >
             <Flex align="center" mr={5}>
                 <Heading as="h1" size="lg" letterSpacing={"tighter"}>
-                    Catalago de Produtos
+                   Catálago de Produtos
                 </Heading>
             </Flex>
         </Flex>
